@@ -2,76 +2,30 @@
   function _() {
     var steps = [];
 
-    var context = {};
+    var globalContext = {};
 
-    function execute(i, lastValue) {
+    function execute(i, context) {
       if (steps.length > i) {
-        steps[i](function(nextValue) {
-          if (nextValue === undefined) {
-            nextValue = lastValue;
-          } else if (nextValue !== null && typeof nextValue === 'object') {
-            nextValue = merge(lastValue, nextValue);
+        steps[i](function(nextContext) {
+          if (nextContext === undefined) {
+            nextContext = context;
+          } else if (nextContext !== null && typeof nextContext === 'object') {
+            nextContext = merge(context, nextContext);
           }
 
-          context = nextValue;
+          globalContext = nextContext;
 
-          execute(i + 1, nextValue);
-        }, lastValue);
+          execute(i + 1, nextContext);
+        }, context);
       }
 
-      return context;
-    }
-
-    function getEl(maybeContext, maybeSelector) {
-      var el;
-
-      if (maybeSelector != null) {
-        el = select(maybeSelector);
-      }
-
-      if (el == null && maybeContext != null) {
-        el = maybeContext.el;
-      }
-
-      return el;
-    }
-
-    function select(selector) {
-      return document.querySelector(selector);
+      return globalContext;
     }
 
     var stepDefinition = {
-      addStylesheet: function(url) {
-        return function(next) {
-          var link = document.createElement('link');
-
-          link.onload = function() {
-            next();
-          };
-
-          link.href = url;
-          link.rel = 'stylesheet';
-
-          document.head.appendChild(link);
-        };
-      },
-
-      addScript: function(url) {
-        return function(next) {
-          var newScript = document.createElement('script');
-
-          newScript.onload = function() {
-            next();
-          };
-
-          document.head.appendChild(newScript);
-          newScript.src = url;
-        };
-      },
-
       click: function(maybeSelector) {
         return function(next, lastValue) {
-          getEl(lastValue, maybeSelector).click();
+          getElement(lastValue, maybeSelector).click();
 
           next();
         };
@@ -86,30 +40,10 @@
       },
 
       execute: function(cb) {
-        return function(next, lastValue) {
-          var nextValue = cb(lastValue);
+        return function(next, context) {
+          var nextContext = cb(context);
 
-          next(nextValue);
-        };
-      },
-
-      focus: function(maybeSelector) {
-        return function(next, lastValue) {
-          getEl(lastValue, maybeSelector).focus();
-
-          next();
-        };
-      },
-
-      resetStyle: function(maybeSelector) {
-        return function(next, lastValue) {
-          var el = getEl(lastValue, maybeSelector);
-
-          if (el.dataset.backupStyle != null) {
-            el.style = el.dataset.backupStyle;
-          }
-
-          next();
+          next(nextContext);
         };
       },
 
@@ -122,39 +56,12 @@
               el: el,
             });
           } else {
-            console.warn('Cannot find element matching selector: ' + selector)
+            console.warn('Cannot find element matching selector: ' + selector);
 
             next({
               el: {},
             });
           }
-        };
-      },
-
-      setStyle: function(selectorOrStyle, style) {
-        return function(next, lastValue) {
-          var el =
-            style != null
-              ? getEl(lastValue, selectorOrStyle)
-              : getEl(lastValue);
-
-          el.dataset.backupStyle = el.style.cssText;
-          el.style = style || selectorOrStyle;
-
-          next();
-        };
-      },
-
-      setValue: function(selectorOrValue, value) {
-        return function(next, lastValue) {
-          var el =
-            value != null
-              ? getEl(lastValue, selectorOrValue)
-              : getEl(lastValue);
-
-          el.value = value || selectorOrValue;
-
-          next();
         };
       },
     };
@@ -167,12 +74,7 @@
       if (fns.hasOwnProperty(key)) {
         o[key] = (function(key) {
           return function() {
-            steps.push(
-              fns[key].apply(
-                window,
-                Array.prototype.slice.call(arguments)
-              )
-            );
+            steps.push(fns[key].apply(window, Array.prototype.slice.call(arguments)));
 
             return o;
           };
@@ -188,10 +90,30 @@
   }
 
   _.extensions = {};
+  _.getElement = getElement;
   _.matches = matches;
   _.merge = merge;
+  _.select = select;
+
+  _.extend = function(name, fn) {
+    _.extensions[name] = fn;
+  };
 
   window.o = _;
+
+  function getElement(maybeContext, maybeSelector) {
+    var el;
+
+    if (maybeSelector != null) {
+      el = select(maybeSelector);
+    }
+
+    if (el == null && maybeContext != null) {
+      el = maybeContext.el;
+    }
+
+    return el;
+  }
 
   function matches(a, b) {
     var match = true;
@@ -228,6 +150,10 @@
     }
 
     return c;
+  }
+
+  function select(selector) {
+    return document.querySelector(selector);
   }
 })();
 
