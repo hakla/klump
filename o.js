@@ -1,5 +1,5 @@
 (function() {
-  function _() {
+  function _(initialContext) {
     var steps = [];
 
     var globalContext = {};
@@ -69,12 +69,21 @@
     var o = {};
 
     var fns = merge(stepDefinition, _.extensions);
+    var timeout;
 
     for (var key in fns) {
       if (fns.hasOwnProperty(key)) {
         o[key] = (function(key) {
           return function() {
             steps.push(fns[key].apply(window, Array.prototype.slice.call(arguments)));
+
+            if (timeout != null) {
+              clearTimeout(timeout);
+            }
+
+            timeout = setTimeout(function() {
+              o.run();
+            }, 0);
 
             return o;
           };
@@ -83,7 +92,13 @@
     }
 
     o.run = function() {
-      return execute(0);
+      if (initialContext instanceof Element) {
+        initialContext = {
+          el: initialContext,
+        };
+      }
+
+      return execute(0, initialContext);
     };
 
     return o;
