@@ -1,5 +1,5 @@
 function load(next, extensions) {
-  var base = './';
+  var base = 'https://cdn.jsdelivr.net/gh/hakla/klump/';
 
   function addScript(url, next) {
     var newScript = document.createElement('script');
