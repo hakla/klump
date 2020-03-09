@@ -33,7 +33,6 @@ if (window.o != null) {
     function mapCombo(combination) {
       var o = {};
       var parts = combination.toLowerCase().split(' ');
-      var key;
 
       for (var i = 0; i < parts.length; ++i) {
         var part = parts[i];
@@ -45,14 +44,8 @@ if (window.o != null) {
         } else if (part === 'alt') {
           o.altKey = true;
         } else {
-          key = part;
+          o.code = 'Key' + part.toUpperCase();
         }
-      }
-
-      if (o.shiftKey === true) {
-        o.key = key.toUpperCase();
-      } else {
-        o.key = key;
       }
 
       return o;
