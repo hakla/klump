@@ -1,5 +1,5 @@
 (function() {
-  function o() {
+  function _() {
     var steps = [];
 
     var context = {};
@@ -34,31 +34,6 @@
       }
 
       return el;
-    }
-
-    /**
-     * Shallow merge two objects into a new one
-     */
-    function merge(a, b) {
-      var c = {};
-
-      if (a != null) {
-        for (var key in a) {
-          if (a.hasOwnProperty(key)) {
-            c[key] = a[key];
-          }
-        }
-      }
-
-      if (b != null) {
-        for (var key in b) {
-          if (b.hasOwnProperty(key)) {
-            c[key] = b[key];
-          }
-        }
-      }
-
-      return c;
     }
 
     function select(selector) {
@@ -142,9 +117,17 @@
         return function(next) {
           var el = select(selector);
 
-          next({
-            el: el,
-          });
+          if (el) {
+            next({
+              el: el,
+            });
+          } else {
+            console.warn('Cannot find element matching selector: ' + selector)
+
+            next({
+              el: {},
+            });
+          }
         };
       },
 
@@ -169,7 +152,7 @@
               ? getEl(lastValue, selectorOrValue)
               : getEl(lastValue);
 
-          el.value = value;
+          el.value = value || selectorOrValue;
 
           next();
         };
@@ -178,12 +161,14 @@
 
     var o = {};
 
-    for (var key in stepDefinition) {
-      if (stepDefinition.hasOwnProperty(key)) {
+    var fns = merge(stepDefinition, _.extensions);
+
+    for (var key in fns) {
+      if (fns.hasOwnProperty(key)) {
         o[key] = (function(key) {
           return function() {
             steps.push(
-              stepDefinition[key].apply(
+              fns[key].apply(
                 window,
                 Array.prototype.slice.call(arguments)
               )
@@ -202,7 +187,48 @@
     return o;
   }
 
-  window.o = o;
+  _.extensions = {};
+  _.matches = matches;
+  _.merge = merge;
+
+  window.o = _;
+
+  function matches(a, b) {
+    var match = true;
+
+    for (var key in b) {
+      if (b.hasOwnProperty(key)) {
+        match = match && a[key] === b[key];
+      }
+    }
+
+    return match;
+  }
+
+  /**
+   * Shallow merge two objects into a new one
+   */
+  function merge(a, b) {
+    var c = {};
+
+    if (a != null) {
+      for (var key in a) {
+        if (a.hasOwnProperty(key)) {
+          c[key] = a[key];
+        }
+      }
+    }
+
+    if (b != null) {
+      for (var key in b) {
+        if (b.hasOwnProperty(key)) {
+          c[key] = b[key];
+        }
+      }
+    }
+
+    return c;
+  }
 })();
 
 //# sourceURL=o.js
