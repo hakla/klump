@@ -8,12 +8,7 @@
   <body>
     <input id="test"></input>
 
-    <script type="text/javascript">
-      load(function(o) {
-        o().select('#test').log().setValue(5).setStyle('border: none').registerKey('ctrl alt shift w, f', function(context) {
-          o(context).setValue(123);
-        });
-      }, ['log', 'control', 'styles', 'keys'])
+    <script src="./test.js" type="text/javascript">
     </script>
   </body>
 </html>
