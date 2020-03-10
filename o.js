@@ -49,7 +49,7 @@
 
       select: function(selector) {
         return function(next) {
-          var el = select(selector);
+          var el = $(selector);
 
           if (el) {
             next({
@@ -108,7 +108,7 @@
   _.getElement = getElement;
   _.matches = matches;
   _.merge = merge;
-  _.select = select;
+  _.$ = $;
 
   _.extend = function(name, fn) {
     _.extensions[name] = fn;
@@ -120,7 +120,7 @@
     var el;
 
     if (maybeSelector != null) {
-      el = select(maybeSelector);
+      el = $(maybeSelector);
     }
 
     if (el == null && maybeContext != null) {
@@ -167,7 +167,7 @@
     return c;
   }
 
-  function select(selector) {
+  function $(selector) {
     return document.querySelector(selector);
   }
 })();
