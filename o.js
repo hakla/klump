@@ -109,6 +109,7 @@
   _.matches = matches;
   _.merge = merge;
   _.$ = $;
+  _.$$ = $$;
 
   _.extend = function(name, fn) {
     _.extensions[name] = fn;
@@ -169,6 +170,10 @@
 
   function $(selector) {
     return document.querySelector(selector);
+  }
+
+  function $$(selector) {
+    return Array.prototype.slice.call(document.querySelectorAll(selector), 0);
   }
 })();
 
