@@ -1,7 +1,7 @@
 if (window.o != null) {
   o.extend('log', function() {
-    return function(next, lastValue) {
-      console.log(lastValue);
+    return function(next, context) {
+      console.log(context);
 
       next();
     };
