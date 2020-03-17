@@ -5,7 +5,7 @@
       (o.onload = e),
         document.head.appendChild(o),
         (o.src =
-          'https://cdn.jsdelivr.net/gh/hakla/klump@ff338ff5f3f0809f85dd626c67eacb10107eb0ab/' + n);
+          'https://cdn.jsdelivr.net/gh/hakla/klump@941324f/' + n);
     }
     o('o.js', function() {
       if (Array.isArray(e)) {
