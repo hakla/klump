@@ -28,6 +28,8 @@ if (window.o != null) {
 
       el.addEventListener('keydown', function keyDownHandler(event) {
         if (o.matches(event, combinations[counter]) === true) {
+          event.preventDefault();
+
           if (combinations.length > counter + 1) {
             ++counter;
           } else {
