@@ -43,7 +43,7 @@ if (window.o != null) {
 
     function mapCombo(combination) {
       var o = {};
-      var parts = combination.toLowerCase().split(' ');
+      var parts = combination.split(' ');
 
       for (var i = 0; i < parts.length; ++i) {
         var part = parts[i];
