@@ -143,7 +143,8 @@
             .click('#relations > .contextual > a')
             .delay(10)
             .setValue('#relation_issue_to_id', prompt('ticket'))
-            .click('#new-relation-form input[type=submit]');
+            .click('#new-relation-form input[type=submit]')
+            .click('#relations > .contextual > a');
         })
         .registerKey('ctrl Enter', function() {
           $('#issue-form').submit();
