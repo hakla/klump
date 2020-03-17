@@ -4,8 +4,7 @@
       var o = document.createElement('script');
       (o.onload = e),
         document.head.appendChild(o),
-        (o.src =
-          'https://cdn.jsdelivr.net/gh/hakla/klump@941324f/' + n);
+        (o.src = 'https://cdn.jsdelivr.net/gh/hakla/klump@941324f/' + n);
     }
     o('o.js', function() {
       if (Array.isArray(e)) {
@@ -138,6 +137,13 @@
 
               $('#issue_estimated_hours').value = hours;
             });
+        })
+        .registerKey('ctrl alt w', function() {
+          o()
+            .click('#relations > .contextual > a')
+            .delay(10)
+            .setValue('#relation_issue_to_id', prompt('ticket'))
+            .click('#new-relation-form input[type=submit]');
         })
         .registerKey('ctrl Enter', function() {
           $('#issue-form').submit();
