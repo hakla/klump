@@ -54,8 +54,10 @@ if (window.o != null) {
           o.shiftKey = true;
         } else if (part === 'alt') {
           o.altKey = true;
-        } else {
+        } else if (char.length === 1) {
           o.code = 'Key' + part.toUpperCase();
+        } else {
+          o.code = part
         }
       }
 
