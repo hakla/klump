@@ -27,8 +27,6 @@ if (window.o != null) {
       var counter = 0;
 
       el.addEventListener('keydown', function keyDownHandler(event) {
-        console.log(event.key, event.code);
-
         if (matches(event, combinations[counter]) === true) {
           event.preventDefault();
 
