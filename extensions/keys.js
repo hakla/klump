@@ -45,7 +45,7 @@ if (window.o != null) {
 
     function mapCombo(combination) {
       var o = {};
-      var parts = combination.split(' ');
+      var parts = combination.split('+');
 
       for (var i = 0; i < parts.length; ++i) {
         var part = parts[i];
@@ -59,7 +59,7 @@ if (window.o != null) {
         } else if (part.length === 1) {
           o.code = 'Key' + part.toUpperCase();
         } else {
-          o.code = part
+          o.code = part;
         }
       }
 
@@ -69,7 +69,7 @@ if (window.o != null) {
     function parseCombination(combination) {
       var combinations = [];
 
-      var parts = combination.split(',');
+      var parts = combination.split(' ');
 
       for (var i = 0; i < parts.length; ++i) {
         combinations.push(mapCombo(parts[i].trim()));
