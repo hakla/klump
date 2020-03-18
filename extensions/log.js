@@ -1,7 +1,11 @@
 if (window.o != null) {
-  o.extend('log', function() {
+  o.extend('log', function(value) {
     return function(next, context) {
-      console.log(context);
+      if (value !== undefined) {
+        console.log(value, context);
+      } else {
+        console.log(context);
+      }
 
       next();
     };
