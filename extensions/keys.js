@@ -27,7 +27,9 @@ if (window.o != null) {
       var counter = 0;
 
       el.addEventListener('keydown', function keyDownHandler(event) {
-        if (o.matches(event, combinations[counter]) === true) {
+        console.log(event.key, event.code);
+
+        if (matches(event, combinations[counter]) === true) {
           event.preventDefault();
 
           if (combinations.length > counter + 1) {
@@ -45,6 +47,7 @@ if (window.o != null) {
 
     function mapCombo(combination) {
       var o = {};
+
       var parts = combination.split('+');
 
       for (var i = 0; i < parts.length; ++i) {
@@ -56,14 +59,36 @@ if (window.o != null) {
           o.shiftKey = true;
         } else if (part === 'alt') {
           o.altKey = true;
-        } else if (part.length === 1) {
-          o.code = 'Key' + part.toUpperCase();
+        } else if (part === 'meta') {
+          o.metaKey = true;
         } else {
-          o.code = part;
+          if (o.ctrlKey && o.altKey) {
+            var code = part.charCodeAt(0);
+
+            if (code > 47 && code < 58) {
+              o.code = 'Digit' + part[0];
+            }
+          } else {
+            o.key = part.toLowerCase();
+          }
         }
       }
 
       return o;
+    }
+
+    function matches(event, combination) {
+      return o.matches(
+        {
+          altKey: event.altKey,
+          code: event.code,
+          ctrlKey: event.ctrlKey,
+          key: event.key.toLowerCase(),
+          metaKey: event.metaKey,
+          shiftKey: event.shiftKey,
+        },
+        combination
+      );
     }
 
     function parseCombination(combination) {
