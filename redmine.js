@@ -1,10 +1,10 @@
-(function() {
+javascript: (function() {
   function load(n, e) {
     function o(n, e) {
       var o = document.createElement('script');
       (o.onload = e),
         document.head.appendChild(o),
-        (o.src = 'https://cdn.jsdelivr.net/gh/hakla/klump@941324f/' + n);
+        (o.src = 'https://cdn.jsdelivr.net/gh/hakla/klump@d0e86e9/' + n);
     }
     o('o.js', function() {
       if (Array.isArray(e)) {
@@ -121,32 +121,21 @@
 
           document.body.appendChild(div);
         })
-        .registerKey('ctrl alt e', function() {
-          if ($('#unique-md-random-id-uhflkjasdf__container') != null) {
-            editMDDone();
-          } else {
-            editMD();
-          }
-        })
-        .registerKey('ctrl alt r', function() {
-          o()
-            .click('.icon.icon-edit')
-            .delay(200)
-            .execute(function() {
-              var hours = prompt('stunden?');
-
-              $('#issue_estimated_hours').value = hours;
-            });
-        })
-        .registerKey('ctrl alt w', function() {
-          o()
-            .click('#relations > .contextual > a')
-            .delay(10)
-            .setValue('#relation_issue_to_id', prompt('ticket'))
-            .click('#new-relation-form input[type=submit]')
-            .click('#relations > .contextual > a');
-        })
-        .registerKey('ctrl Enter', function() {
+        .registerKey('shift+alt+w 1', toggleEditor)
+        .registerKey('shift+alt+w 8', o.pipe(toggleEdit, updateEstimatedHours))
+        .registerKey('shift+alt+w 7', addRelation)
+        .registerKey('shift+alt+w 2', updateDone)
+        .registerKey(
+          'shift+alt+l',
+          o.pipe(
+            toggleEdit,
+            updateDone,
+            updateActivity,
+            updateSpentTime,
+            updateComment
+          )
+        )
+        .registerKey('ctrl+Enter', function() {
           $('#issue-form').submit();
         });
 
@@ -204,8 +193,57 @@
           })
           .run();
       }
+
+      function addRelation() {
+        o()
+          .click('#relations > .contextual > a')
+          .delay(10)
+          .setValue('#relation_issue_to_id', prompt('ticket'))
+          .click('#new-relation-form input[type=submit]')
+          .click('#relations > .contextual > a');
+      }
+
+      function toggleEdit(o) {
+        o.click('.icon.icon-edit').delay(10);
+      }
+
+      function toggleEditor() {
+        if ($('#unique-md-random-id-uhflkjasdf__container') != null) {
+          editMDDone();
+        } else {
+          editMD();
+        }
+      }
+
+      function updateActivity(o) {
+        o.select('#time_entry_activity_id').promptNewValue(
+          'Activity? (Design: 8, Development: 9, Meeting: 10, Project Management: 13)'
+        );
+      }
+
+      function updateComment(o) {
+        o.select('#time_entry_comments').promptNewValue('Comment?');
+      }
+
+      function updateDone(o) {
+        o.select('#issue_done_ratio').promptNewValue('Done?');
+      }
+
+      function updateSpentTime(o) {
+        o.select('#time_entry_hours').promptNewValue('Spent time?');
+      }
+
+      function updateState(o) {
+        o.select('#issue_status_id').promptNewValue(
+          'Status? (In Progress: 2, Postponed: 8, Fix available: 9, Resolved: 3, Closed: 5)'
+        );
+      }
+
+      function updateEstimatedHours(o) {
+        o.select('#issue_estimated_hours').promptNewValue();
+      }
     },
-    ['styles', 'control', 'loader', 'keys']
+    ['styles', 'control', 'loader', 'keys', 'prompt']
   );
 })();
 
