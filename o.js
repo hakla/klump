@@ -117,6 +117,7 @@
   _.getElement = getElement;
   _.matches = matches;
   _.merge = merge;
+  _.pipe = pipe;
   _.$ = $;
   _.$$ = $$;
 
@@ -189,6 +190,18 @@
     }
 
     return c;
+  }
+
+  function pipe() {
+    var functions = Array.prototype.slice.call(arguments);
+
+    return function() {
+      var instance = o();
+
+      for (var i = 0; i < functions.length; ++i) {
+        functions[i](instance);
+      }
+    };
   }
 
   function $(selector) {
