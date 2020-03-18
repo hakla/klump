@@ -75,7 +75,15 @@
       if (fns.hasOwnProperty(key)) {
         o[key] = (function(key) {
           return function() {
-            steps.push(fns[key].apply(window, Array.prototype.slice.call(arguments)));
+            var next = fns[key].apply(window, Array.prototype.slice.call(arguments));
+
+            if (Array.isArray(next)) {
+              for (var i = 0; i < next.length; ++i) {
+                steps.push(next[i]);
+              }
+            } else {
+              steps.push(next);
+            }
 
             if (timeout != null) {
               clearTimeout(timeout);
