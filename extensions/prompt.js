@@ -27,6 +27,8 @@ if (window.o != null) {
             el.value = o.evaluate(maybeDefaultValue);
           }
         }
+
+        next();
       };
     }
   })();
