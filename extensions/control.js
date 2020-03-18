@@ -11,7 +11,13 @@ if (window.o != null) {
     return function(next, context) {
       var el = value != null ? o.getElement(context, selectorOrValue) : o.getElement(context);
 
-      el.value = value || selectorOrValue;
+      if (el) {
+        if (value != null) {
+          el.value = value;
+        } else if (selectorOrValue != null) {
+          el.value = selectorOrValue;
+        }
+      }
 
       next();
     };
