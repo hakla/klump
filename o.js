@@ -112,6 +112,7 @@
     return o;
   }
 
+  _.evaluate = evaluate;
   _.extensions = {};
   _.getElement = getElement;
   _.matches = matches;
@@ -124,6 +125,20 @@
   };
 
   window.o = _;
+
+  function evaluate(any) {
+    var result;
+
+    if (any != null) {
+      if (typeof any === 'function') {
+        result = any();
+      } else {
+        result = any;
+      }
+    }
+
+    return result;
+  }
 
   function getElement(maybeContext, maybeSelector) {
     var el;
