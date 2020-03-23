@@ -4,7 +4,7 @@ javascript: (function() {
       var o = document.createElement('script');
       (o.onload = e),
         document.head.appendChild(o),
-        (o.src = 'https://cdn.jsdelivr.net/gh/hakla/klump@d0e86e9/' + n);
+        (o.src = 'https://cdn.jsdelivr.net/gh/hakla/klump@ad95c58/' + n);
     }
     o('o.js', function() {
       if (Array.isArray(e)) {
@@ -17,6 +17,50 @@ javascript: (function() {
       } else n(window.o);
     });
   }
+
+  function updateField(selector) {
+    return function(value) {
+      return function(o) {
+        o.setValue(selector, value);
+      };
+    };
+  }
+
+  var redmine = {
+    addRelation: function(o) {
+      o.click('#relations > .contextual > a')
+        .delay(10)
+        .select('#relation_issue_to_id')
+        .promptNewValue('ticket')
+        .click('#new-relation-form input[type=submit]')
+        .click('#relations > .contextual > a');
+    },
+
+    setDoneRatio: updateField('#issue_done_ratio'),
+    setEntryActivity: updateField('#time_entry_activity_id'),
+    setEntryComments: updateField('#time_entry_comments'),
+    setEntryHours: updateField('#time_entry_hours'),
+    setEstimatedHours: updateField('#issue_estimated_hours'),
+    setStatus: updateField('#issue_status_id'),
+
+    focusEditor: function(o) {
+      o.click('p>a>.icon.icon-edit')
+        .delay(0)
+        .select('#issue_description')
+        .focus()
+        .setStyle(
+          'position: fixed; top: 0; left: 0; height: 100%; z-index: 100000; padding: 100px 25%; width: 50%; font-size: 16px; border: none;'
+        );
+    },
+
+    unfocusEditor: function(o) {
+      o.resetStyle('#issue_description');
+    },
+
+    openEditor: function(o) {
+      o.click('.icon.icon-edit');
+    },
+  };
 
   load(
     function(o) {
@@ -58,60 +102,21 @@ javascript: (function() {
             'div',
             'position: fixed; top: 100px; right: 0px; height: 200px; width: 200px; background-color: #fff; z-index: 100001',
             [
+              el('p', '', [button('In Progress', o.pipe(toggleEdit, updateStatus))]),
               el('p', '', [
-                button('In Progress', function() {
-                  window
-                    .o()
-                    .click('.icon.icon-edit')
-                    .delay(200)
-                    .setValue('#issue_status_id', 2)
-                    .run();
-                }),
+                button(
+                  'In Progress (0%)',
+                  o.pipe(redmine.openEditor, redmine.setStatus(2), redmine.setDoneRatio(0))
+                ),
               ]),
               el('p', '', [
-                button('In Progress (0%)', function() {
-                  window
-                    .o()
-                    .click('.icon.icon-edit')
-                    .delay(200)
-                    .setValue('#issue_status_id', 2)
-                    .setValue('#issue_done_ratio', 0)
-                    .run();
-                }),
-              ]),
-              el('p', '', [
-                button('Fix available', function() {
-                  window
-                    .o()
-                    .click('.icon.icon-edit')
-                    .delay(200)
-                    .setValue('#issue_status_id', 9)
-                    .setValue('#issue_done_ratio', 100)
-                    .run();
-                }),
+                button(
+                  'Fix available',
+                  o.pipe(redmine.openEditor, redmine.setStatus(9), redmine.setDoneRatio(100))
+                ),
+                el('p', '', [button('Edit', o.pipe(redmine.openEditor, redmine.focusEditor))]),
                 el('p', '', [
-                  button('Edit', function() {
-                    window
-                      .o()
-                      .click('.icon.icon-edit')
-                      .delay(200)
-                      .click('p>a>.icon.icon-edit')
-                      .delay(0)
-                      .select('#issue_description')
-                      .focus()
-                      .setStyle(
-                        'position: fixed; top: 0; left: 0; height: 100%; z-index: 100000; padding: 100px 25%; width: 50%; font-size: 16px; border: none;'
-                      )
-                      .run();
-                  }),
-                ]),
-                el('p', '', [
-                  button('Edit done', function() {
-                    window
-                      .o()
-                      .resetStyle('#issue_description')
-                      .run();
-                  }),
+                  button('Edit done', o.pipe(redmine.unfocusEditor)),
                 ]),
                 el('p', '', [button('Edit MD', editMD)]),
                 el('p', '', [button('Edit done MD', editMDDone)]),
@@ -123,17 +128,10 @@ javascript: (function() {
         })
         .registerKey('shift+alt+w 1', toggleEditor)
         .registerKey('shift+alt+w 8', o.pipe(toggleEdit, updateEstimatedHours))
-        .registerKey('shift+alt+w 7', addRelation)
-        .registerKey('shift+alt+w 2', updateDone)
+        .registerKey('shift+alt+w 7', o.pipe(addRelation))
         .registerKey(
           'shift+alt+l',
-          o.pipe(
-            toggleEdit,
-            updateDone,
-            updateActivity,
-            updateSpentTime,
-            updateComment
-          )
+          o.pipe(toggleEdit, updateDone, updateActivity, updateSpentTime, updateComment)
         )
         .registerKey('ctrl+Enter', function() {
           $('#issue-form').submit();
@@ -195,12 +193,7 @@ javascript: (function() {
       }
 
       function addRelation() {
-        o()
-          .click('#relations > .contextual > a')
-          .delay(10)
-          .setValue('#relation_issue_to_id', prompt('ticket'))
-          .click('#new-relation-form input[type=submit]')
-          .click('#relations > .contextual > a');
+        redmine.addRelation(prompt('Relation'));
       }
 
       function toggleEdit(o) {
@@ -233,9 +226,10 @@ javascript: (function() {
         o.select('#time_entry_hours').promptNewValue('Spent time?');
       }
 
-      function updateState(o) {
+      function updateStatus(o) {
         o.select('#issue_status_id').promptNewValue(
-          'Status? (In Progress: 2, Postponed: 8, Fix available: 9, Resolved: 3, Closed: 5)'
+          'Status? (In Progress: 2, Postponed: 8, Fix available: 9, Resolved: 3, Closed: 5)',
+          2
         );
       }
 
