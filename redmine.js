@@ -115,9 +115,7 @@ javascript: (function() {
                   o.pipe(redmine.openEditor, redmine.setStatus(9), redmine.setDoneRatio(100))
                 ),
                 el('p', '', [button('Edit', o.pipe(redmine.openEditor, redmine.focusEditor))]),
-                el('p', '', [
-                  button('Edit done', o.pipe(redmine.unfocusEditor)),
-                ]),
+                el('p', '', [button('Edit done', o.pipe(redmine.unfocusEditor))]),
                 el('p', '', [button('Edit MD', editMD)]),
                 el('p', '', [button('Edit done MD', editMDDone)]),
               ]),
@@ -126,12 +124,23 @@ javascript: (function() {
 
           document.body.appendChild(div);
         })
-        .registerKey('shift+alt+w 1', toggleEditor)
+        .registerKey('shift+alt+w 1', o.pipe(toggleEdit))
         .registerKey('shift+alt+w 8', o.pipe(toggleEdit, updateEstimatedHours))
-        .registerKey('shift+alt+w 7', o.pipe(addRelation))
+        .registerKey('shift+alt+w shift+alt+r', o.pipe(addRelation))
+        .registerKey(
+          'shift+alt+w shift+alt+w',
+          o.pipe(redmine.openEditor, redmine.setStatus(2), updateDone)
+        )
         .registerKey(
           'shift+alt+l',
-          o.pipe(toggleEdit, updateDone, updateActivity, updateSpentTime, updateComment)
+          o.pipe(
+            toggleEdit,
+            updateStatus,
+            updateDone,
+            updateActivity,
+            updateSpentTime,
+            updateComment
+          )
         )
         .registerKey('ctrl+Enter', function() {
           $('#issue-form').submit();
@@ -192,8 +201,8 @@ javascript: (function() {
           .run();
       }
 
-      function addRelation() {
-        redmine.addRelation(prompt('Relation'));
+      function addRelation(o) {
+        o.pipe(redmine.addRelation);
       }
 
       function toggleEdit(o) {
