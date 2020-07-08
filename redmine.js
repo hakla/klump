@@ -100,9 +100,8 @@ javascript: (function() {
         .execute(function() {
           var div = el(
             'div',
-            'position: fixed; top: 100px; right: 0px; height: 200px; width: 200px; background-color: #fff; z-index: 100001',
+            'position: fixed; right: 0px; background-color: rgb(255, 255, 255); z-index: 100001; display: flex; top: 10px; left: 50%; transform: translate(-50%); width: 205px;',
             [
-              el('p', '', [button('In Progress', o.pipe(toggleEdit, updateStatus))]),
               el('p', '', [
                 button(
                   'In Progress (0%)',
@@ -114,10 +113,6 @@ javascript: (function() {
                   'Fix available',
                   o.pipe(redmine.openEditor, redmine.setStatus(9), redmine.setDoneRatio(100))
                 ),
-                el('p', '', [button('Edit', o.pipe(redmine.openEditor, redmine.focusEditor))]),
-                el('p', '', [button('Edit done', o.pipe(redmine.unfocusEditor))]),
-                el('p', '', [button('Edit MD', editMD)]),
-                el('p', '', [button('Edit done MD', editMDDone)]),
               ]),
             ]
           );
