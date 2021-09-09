@@ -67,14 +67,18 @@ javascript: (function() {
       var $ = o.$;
 
       function button(text, cb) {
-        var button = el('button', 'border: none', text);
+        var button = el('a', '', text, [['href', '']]);
 
-        button.addEventListener('click', cb);
+        button.addEventListener('click', function(event) {
+          event.preventDefault();
+          event.stopPropagation();
+          cb(event);
+        });
 
         return button;
       }
 
-      function el(name, style, content) {
+      function el(name, style, content, attributes = []) {
         var el = document.createElement(name);
 
         if (style != null) {
@@ -91,6 +95,12 @@ javascript: (function() {
           }
         }
 
+        if (attributes) {
+          for (const [key, value] of attributes) {
+            el.setAttribute(key, value)
+          }
+        }
+
         return el;
       }
 
@@ -100,24 +110,30 @@ javascript: (function() {
         .execute(function() {
           var div = el(
             'div',
-            'position: fixed; right: 0px; background-color: rgb(255, 255, 255); z-index: 100001; display: flex; top: 10px; left: 50%; transform: translate(-50%); width: 205px;',
+            'position: sticky; top: 0; background: inherit; padding: 1rem; margin: 0rem -1rem -1rem; z-index: 1;',
             [
-              el('p', '', [
-                button(
-                  'In Progress (0%)',
-                  o.pipe(redmine.openEditor, redmine.setStatus(2), redmine.setDoneRatio(0))
-                ),
-              ]),
-              el('p', '', [
-                button(
-                  'Fix available',
-                  o.pipe(redmine.openEditor, redmine.setStatus(9), redmine.setDoneRatio(100))
-                ),
+              el('h3', 'margin-top: 0;', 'Custom extensions'),
+              el('ul', '', [
+                el('li', '', [
+                  button(
+                    'In Progress (0%)',
+                    o.pipe(redmine.openEditor, redmine.setStatus(2), redmine.setDoneRatio(0))
+                  )
+                ]),
+                el('li', '', [
+                  button(
+                    'Fix available',
+                    o.pipe(redmine.openEditor, redmine.setStatus(9), redmine.setDoneRatio(100))
+                  ),
+                ]),
               ]),
             ]
           );
 
-          document.body.appendChild(div);
+          const s = document.querySelector('#sidebar');
+          s.insertBefore(div, s.childNodes[0]);
+
+          document.querySelector('#wrapper').style.overflow = 'inherit';
         })
         .registerKey('shift+alt+w 1', o.pipe(toggleEdit))
         .registerKey('shift+alt+w 8', o.pipe(toggleEdit, updateEstimatedHours))
